@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Vectorial DB
+chromadb_data/
+
+# Books
+books/

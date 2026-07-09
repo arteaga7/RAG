@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ask a Question</title>
+</head>
+<body>
+    <h2>Ask a Question About a Collection</h2>
+    <form method="post">
+        <label for="collection">Select a collection:</label>
+        <select name="collection" id="collection">
+            {% for name in collections %}
+                <option value="{{ name }}" {% if name == selected_collection %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <textarea name="question" rows="4" cols="70" placeholder="Type your question here..." required></textarea><br><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if answer %}
+        <h3>Answer:</h3>
+        <p>{{ answer }}</p>
+    {% endif %}
+
+    {% if context %}
+        <h4>Retrieved Context:</h4>
+        <pre>{{ context }}</pre>
+    {% endif %}
+</body>
+</html>
