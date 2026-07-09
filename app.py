@@ -2,21 +2,20 @@ from flask import Flask, request, render_template
 import os
 from dotenv import load_dotenv
 import chromadb
-# from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
-from openai import OpenAI
+from groq import Groq
 import ollama
 from ollama import Client
 
 # Load environment variables
 load_dotenv()
-openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 app = Flask(__name__)
 client = Client()
 
 # Persistent ChromaDB setup
 chroma_client = chromadb.PersistentClient(path="./chromadb_data")
-# embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv("OPENAI_API_KEY"))
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -37,9 +36,8 @@ def index():
         if request.method == "POST":
             question = request.form["question"]
 
-            # Query embeddings
-            # results = collection.query(query_texts=[question], n_results=10)
-            query_embedding = embedding = client.embed(
+            # Query embeddings con Ollama
+            query_embedding = client.embed(
                 model="nomic-embed-text",
                 input=question
             ).embeddings[0]
@@ -52,9 +50,9 @@ def index():
             retrieved_docs = results["documents"][0]
             context = "\n".join(retrieved_docs)
 
-            # Call GPT
-            response = openai_client.chat.completions.create(
-                model="gpt-4o",
+            # Call Groq (Mantiene una estructura idéntica a OpenAI)
+            response = groq_client.chat.completions.create(
+                model="llama-3.3-70b-versatile",  # <-- Modelo de Groq
                 messages=[
                     {
                         "role": "system",
