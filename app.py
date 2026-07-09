@@ -5,12 +5,14 @@ import chromadb
 # from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from openai import OpenAI
 import ollama
+from ollama import Client
 
 # Load environment variables
 load_dotenv()
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 app = Flask(__name__)
+client = Client()
 
 # Persistent ChromaDB setup
 chroma_client = chromadb.PersistentClient(path="./chromadb_data")
@@ -37,9 +39,10 @@ def index():
 
             # Query embeddings
             # results = collection.query(query_texts=[question], n_results=10)
-            query_embedding = ollama.embeddings(
-                model="nomic-embed-text", prompt=question
-            )["embedding"]
+            query_embedding = embedding = client.embed(
+                model="nomic-embed-text",
+                input=question
+            ).embeddings[0]
 
             results = collection.query(
                 query_embeddings=[query_embedding],
